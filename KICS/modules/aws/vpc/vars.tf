@@ -4,20 +4,26 @@ locals {
 }
 
 variable "identifier" {
-  default = null
+  default     = null
+  description = "An optional identifier used to customize resource names."
 }
+
 variable "organization_account_name" {
-  type = string
+  type        = string
+  description = "The name of the organization account, used to prefix resource names."
 }
 
 variable "cidr_block" {
-  type = string
+  type        = string
+  description = "The CIDR block for the VPC."
 }
 
 variable "destination_logs_arn" {
-  default = null
+  default     = null
+  description = "The ARN of the destination for VPC flow logs. Optional."
 }
 
 variable "cluster_name" {
-  default = "cluster"
+  default     = "cluster"
+  description = "The name of the Kubernetes cluster. Default is 'cluster'."
 }

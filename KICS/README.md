@@ -102,6 +102,7 @@ kics list --scanners
 
 
 
+
    MLLLLLM             MLLLLLLLLL   LLLLLLL             KLLLLLLLLLLLLLLLL       LLLLLLLLLLLLLLLLLLLLLLL
    MMMMMMM           MMMMMMMMMML    MMMMMMMK       LMMMMMMMMMMMMMMMMMMMML   KLMMMMMMMMMMMMMMMMMMMMMMMMM
    MMMMMMM         MMMMMMMMML       MMMMMMMK     LMMMMMMMMMMMMMMMMMMMMMML  LMMMMMMMMMMMMMMMMMMMMMMMMMMM
@@ -135,66 +136,25 @@ Platform: Terraform
 CWE: 710
 Learn more about this vulnerability: https://docs.kics.io/latest/queries/terraform-queries/fc5109bf-01fd-49fb-8bde-4492b543c34a
 
-	[1]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:6
+	[1]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:26
 
-		005:
-		006: variable "identifier" {
-		007:   default = null
+		025:
+		026: variable "cluster_name" {
+		027:   default     = "cluster"
 
 
 	[2]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:21
 
 		020:
-		021: variable "cluster_name" {
-		022:   default = "cluster"
+		021: variable "destination_logs_arn" {
+		022:   default     = null
 
 
-	[3]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:17
-
-		016:
-		017: variable "destination_logs_arn" {
-		018:   default = null
-
-
-Variable Without Description, Severity: INFO, Results: 5
-Description: All variables should contain a valid description.
-Platform: Terraform
-CWE: 710
-Learn more about this vulnerability: https://docs.kics.io/latest/queries/terraform-queries/2a153952-2544-4687-bcc9-cc8fea814a9b
-
-	[1]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:21
-
-		020:
-		021: variable "cluster_name" {
-		022:   default = "cluster"
-
-
-	[2]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:17
-
-		016:
-		017: variable "destination_logs_arn" {
-		018:   default = null
-
-
-	[3]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:13
-
-		012:
-		013: variable "cidr_block" {
-		014:   type = string
-
-
-	[4]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:6
+	[3]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:6
 
 		005:
 		006: variable "identifier" {
-		007:   default = null
-
-
-	[5]: ./devops-caffeine/KICS/modules/aws/vpc/vars.tf:9
-
-		008: }
-		009: variable "organization_account_name" {
-		010:   type = string
+		007:   default     = null
 
 
 Resource Not Using Tags, Severity: INFO, Results: 4
@@ -203,11 +163,11 @@ Platform: Terraform
 CWE: 665
 Learn more about this vulnerability: https://docs.kics.io/latest/queries/terraform-queries/aws/e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10
 
-	[1]: ./devops-caffeine/KICS/modules/aws/vpc/main.tf:20
+	[1]: ./devops-caffeine/KICS/modules/aws/vpc/main.tf:28
 
-		019:
-		020: resource "aws_eip" "this" {
-		021:   depends_on = [aws_vpc.this]
+		027:
+		028:   tags = {
+		029:     Name = local.nat_gateway_name
 
 
 	[2]: ./devops-caffeine/KICS/modules/aws/vpc/main.tf:15
@@ -224,59 +184,11 @@ Learn more about this vulnerability: https://docs.kics.io/latest/queries/terrafo
 		039:     Name = local.internet_gateway_name
 
 
-	[4]: ./devops-caffeine/KICS/modules/aws/vpc/main.tf:28
+	[4]: ./devops-caffeine/KICS/modules/aws/vpc/main.tf:20
 
-		027:
-		028:   tags = {
-		029:     Name = local.nat_gateway_name
-
-
-Output Without Description, Severity: INFO, Results: 6
-Description: All outputs should contain a valid description.
-Platform: Terraform
-CWE: 710
-Learn more about this vulnerability: https://docs.kics.io/latest/queries/terraform-queries/59312e8a-a64e-41e7-a252-618533dd1ea8
-
-	[1]: ./devops-caffeine/KICS/modules/aws/vpc/output.tf:21
-
-		020:
-		021: output "vpc_name" {
-		022:   value = aws_vpc.this.arn
-
-
-	[2]: ./devops-caffeine/KICS/modules/aws/vpc/output.tf:5
-
-		004:
-		005: output "private_route_table_id" {
-		006:   value = aws_route_table.private.id
-
-
-	[3]: ./devops-caffeine/KICS/modules/aws/vpc/output.tf:17
-
-		016:
-		017: output "private_subnets" {
-		018:   value = aws_subnet.private.*.id
-
-
-	[4]: ./devops-caffeine/KICS/modules/aws/vpc/output.tf:1
-
-		001: output "vpc_id" {
-		002:   value = aws_vpc.this.id
-		003: }
-
-
-	[5]: ./devops-caffeine/KICS/modules/aws/vpc/output.tf:13
-
-		012:
-		013: output "default_security_group_id" {
-		014:   value = aws_vpc.this.default_security_group_id
-
-
-	[6]: ./devops-caffeine/KICS/modules/aws/vpc/output.tf:9
-
-		008:
-		009: output "public_route_table_id" {
-		010:   value = aws_route_table.private.id
+		019:
+		020: resource "aws_eip" "this" {
+		021:   depends_on = [aws_vpc.this]
 
 
 Shield Advanced Not In Use, Severity: LOW, Results: 1
@@ -298,18 +210,18 @@ Platform: Terraform
 CWE: 710
 Learn more about this vulnerability: https://docs.kics.io/latest/queries/terraform-queries/aws/e592a0c5-5bdb-414c-9066-5dba7cdea370
 
-	[1]: ./devops-caffeine/KICS/modules/aws/vpc/route-tables.tf:14
-
-		013:
-		014: resource "aws_route_table" "private" {
-		015:   vpc_id = aws_vpc.this.id
-
-
-	[2]: ./devops-caffeine/KICS/modules/aws/vpc/subnets.tf:14
+	[1]: ./devops-caffeine/KICS/modules/aws/vpc/subnets.tf:14
 
 		013:
 		014: resource "aws_subnet" "private" {
 		015:   count                   = length(data.aws_availability_zones.available.names)
+
+
+	[2]: ./devops-caffeine/KICS/modules/aws/vpc/route-tables.tf:14
+
+		013:
+		014: resource "aws_route_table" "private" {
+		015:   vpc_id = aws_vpc.this.id
 
 
 	[3]: ./devops-caffeine/KICS/modules/aws/vpc/main.tf:8
@@ -351,8 +263,8 @@ CRITICAL: 0
 HIGH: 0
 MEDIUM: 2
 LOW: 4
-INFO: 18
-TOTAL: 24
+INFO: 7
+TOTAL: 13
 
 Generating Reports: Done
 
