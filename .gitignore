@@ -9,6 +9,7 @@
 tfplan/
 tfplan
 backend.tf
+provider.tf
 
 # Node artifact files
 node_modules/
