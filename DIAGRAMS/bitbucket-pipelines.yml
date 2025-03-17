@@ -1,0 +1,23 @@
+image: python:3.9
+
+pipelines:
+  default:
+    - step:
+        name: "Generate and Publish Diagrams"
+        script:
+          - apt-get update && apt-get install -y graphviz curl zip jq
+          - pip install diagrams
+          - mkdir -p artifacts
+          - TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+          - echo "🚀 Running diagram generation script..."
+          - chmod +x scripts/generate_diagrams.sh
+          - ./scripts/generate_diagrams.sh
+
+          - echo "📤 Uploading diagrams to Confluence..."
+          - chmod +x scripts/upload_to_confluence.sh
+          - ./scripts/upload_to_confluence.sh
+
+        artifacts:
+          - "artifacts/*.png"
+          - "artifacts/*.zip"

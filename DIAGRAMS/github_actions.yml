@@ -1,0 +1,64 @@
+name: Generate and Upload Diagrams
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  generate-diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          python -m venv diagrams_env
+          source diagrams_env/bin/activate
+          pip install diagrams boto3 requests
+
+      - name: Run Diagram Scripts
+        run: |
+          source diagrams_env/bin/activate
+          mkdir -p artifacts
+          for script in DIAGRAMS/*.py; do
+            python "$script"
+          done
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: diagrams
+          path: artifacts/
+
+  upload-to-confluence:
+    needs: generate-diagrams
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: diagrams
+          path: artifacts/
+
+      - name: Upload to Confluence
+        env:
+          CONFLUENCE_URL: ${{ secrets.CONFLUENCE_URL }}
+          CONFLUENCE_USER: ${{ secrets.CONFLUENCE_USER }}
+          CONFLUENCE_API_TOKEN: ${{ secrets.CONFLUENCE_API_TOKEN }}
+        run: |
+          chmod +x scripts/upload_confluence.sh
+          ./scripts/upload_confluence.sh
