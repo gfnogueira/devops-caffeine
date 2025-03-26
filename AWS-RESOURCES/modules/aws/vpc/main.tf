@@ -18,7 +18,6 @@ resource "aws_vpc" "this" {
 }
 
 resource "aws_eip" "this" {
-  vpc        = true
   depends_on = [aws_vpc.this]
 }
 
