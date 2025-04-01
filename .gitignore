@@ -10,6 +10,7 @@ tfplan/
 tfplan
 backend.tf
 provider.tf
+tests
 
 # Node artifact files
 node_modules/
