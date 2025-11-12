@@ -1,0 +1,118 @@
+admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0
+      port_value: 9901
+
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 8080
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          scheme_header_transformation:
+            scheme_to_overwrite: https
+          stat_prefix: ingress_http
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/vote"
+                route:
+                  cluster: voting_api_cluster
+                  rate_limits:
+                  - actions:
+                    # Rate limit - IP
+                    - remote_address: {}
+                  - actions:
+                    # Rate limit - header (token/user)
+                    - request_headers:
+                        header_name: "x-user-id"
+                        descriptor_key: "user_id"
+              
+              - match:
+                  prefix: "/health"
+                route:
+                  cluster: voting_api_cluster
+              
+              # Results route - More permissive rate limit
+              - match:
+                  prefix: "/results"
+                route:
+                  cluster: voting_api_cluster
+                  rate_limits:
+                  - actions:
+                    - remote_address: {}
+
+          http_filters:
+          # Rate limit filter
+          - name: envoy.filters.http.ratelimit
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
+              domain: voting-system
+              failure_mode_deny: true
+              timeout: 0.25s
+              rate_limit_service:
+                grpc_service:
+                  envoy_grpc:
+                    cluster_name: ratelimit_cluster
+                transport_api_version: V3
+          
+          # Router filter (always last)
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
+  clusters:
+  # Voting API Backend
+  - name: voting_api_cluster
+    connect_timeout: 0.25s
+    type: STRICT_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: voting_api_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: voting-api
+                port_value: 3000
+    health_checks:
+    - timeout: 1s
+      interval: 10s
+      unhealthy_threshold: 2
+      healthy_threshold: 2
+      http_health_check:
+        path: "/health"
+
+  # Rate Limit Service
+  - name: ratelimit_cluster
+    connect_timeout: 0.25s
+    type: STRICT_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    protocol_selection: USE_CONFIGURED_PROTOCOL
+    http2_protocol_options: {}
+    load_assignment:
+      cluster_name: ratelimit_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: ratelimit
+                port_value: 8081

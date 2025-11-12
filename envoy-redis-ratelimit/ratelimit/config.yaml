@@ -1,0 +1,23 @@
+# Rate Limit Configuration
+# Documentation: https://github.com/envoyproxy/ratelimit#configuration
+
+domain: voting-system
+descriptors:
+  # Rate limit by IP - 10 requests per minute
+  - key: remote_address
+    rate_limit:
+      unit: minute
+      requests_per_unit: 10
+  
+  # Rate limit by user_id - 100 requests per minute
+  - key: user_id
+    rate_limit:
+      unit: minute
+      requests_per_unit: 100
+  
+  # Global rate limit (fallback) - 1000 requests per minute
+  - key: generic_key
+    value: "global"
+    rate_limit:
+      unit: minute
+      requests_per_unit: 1000
