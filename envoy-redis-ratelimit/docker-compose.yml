@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # Envoy Proxy - Edge gateway with rate limiting
+  envoy:
+    image: envoyproxy/envoy:v1.28-latest
+    container_name: envoy
+    ports:
+      - "8080:8080"   # HTTP traffic
+      - "9901:9901"   # Admin interface
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+    command: /usr/local/bin/envoy -c /etc/envoy/envoy.yaml --service-cluster edge
+    depends_on:
+      - redis
+      - ratelimit
+      - voting-api
+    networks:
+      - voting-net
+
+  # Redis - Backend for rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - voting-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Envoy Rate Limit Service
+  ratelimit:
+    image: envoyproxy/ratelimit:latest
+    container_name: ratelimit
+    ports:
+      - "8081:8081"   # gRPC
+      - "6070:6070"   # HTTP debug
+    environment:
+      - USE_STATSD=false
+      - LOG_LEVEL=debug
+      - REDIS_SOCKET_TYPE=tcp
+      - REDIS_URL=redis:6379
+      - RUNTIME_ROOT=/data
+      - RUNTIME_SUBDIRECTORY=ratelimit
+      - RUNTIME_WATCH_ROOT=false
+    volumes:
+      - ./ratelimit/config.yaml:/data/ratelimit/config/config.yaml
+    depends_on:
+      - redis
+    networks:
+      - voting-net
+    command: /bin/ratelimit
+
+  # Voting API - Simple backend
+  voting-api:
+    build:
+      context: ./voting-api
+      dockerfile: Dockerfile
+    container_name: voting-api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    networks:
+      - voting-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  redis-data:
+
+networks:
+  voting-net:
+    driver: bridge
