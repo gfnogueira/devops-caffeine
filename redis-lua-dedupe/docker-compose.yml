@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Redis - In-memory database with Lua scripting
+  redis:
+    image: redis:7-alpine
+    container_name: redis-dedupe
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - dedupe-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Voting API - Node.js application with Lua script execution
+  voting-api:
+    build:
+      context: ./voting-api
+      dockerfile: Dockerfile
+    container_name: voting-api-dedupe
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - VOTE_TTL=3600  # 1 hour
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - dedupe-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  redis-data:
+
+networks:
+  dedupe-net:
+    driver: bridge
