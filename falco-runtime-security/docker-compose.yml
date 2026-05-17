@@ -1,0 +1,57 @@
+services:
+  falco:
+    image: falcosecurity/falco:0.39.0-debian
+    container_name: falco-runtime
+    privileged: true
+    pid: host
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      FALCO_BPF_PROBE: ""
+      HOST_ROOT: /host
+    command:
+      - /usr/bin/falco
+      - --modern-bpf
+      - -c
+      - /etc/falco/falco.yaml
+      - -r
+      - /etc/falco/falco_rules.yaml
+      - -r
+      - /etc/falco/rules.d/
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - /proc:/host/proc:ro
+      - /etc:/host/etc:ro
+      - /var/run:/host/var/run
+      - ./config/falco.yaml:/etc/falco/falco.yaml:ro
+      - ./rules:/etc/falco/rules.d:ro
+      - falco-events:/var/log/falco
+
+  falcosidekick:
+    image: falcosecurity/falcosidekick:2.30.0
+    container_name: falco-sidekick
+    depends_on:
+      - falco
+    ports:
+      - "${SIDEKICK_LISTEN_PORT:-2801}:2801"
+    environment:
+      LISTENPORT: "2801"
+      LOGLEVEL: "${SIDEKICK_WEBUI_LOGLEVEL:-info}"
+      WEBUI_URL: "http://falcosidekick-ui:2802"
+      STDOUT_MINIMUMPRIORITY: "debug"
+    restart: unless-stopped
+
+  falcosidekick-ui:
+    image: falcosecurity/falcosidekick-ui:2.4.0
+    container_name: falco-sidekick-ui
+    depends_on:
+      - falcosidekick
+    ports:
+      - "${SIDEKICK_WEBUI_PORT:-2802}:2802"
+    environment:
+      FALCOSIDEKICK_UI_REDIS_URL: ""
+      FALCOSIDEKICK_UI_LOGLEVEL: "${SIDEKICK_WEBUI_LOGLEVEL:-info}"
+    restart: unless-stopped
+
+volumes:
+  falco-events:
