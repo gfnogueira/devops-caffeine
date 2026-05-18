@@ -1,0 +1,35 @@
+- rule: Interactive shell spawned in container
+  desc: Detects an interactive shell process attached to a TTY inside a running container.
+  condition: >
+    spawned_process
+    and container_workload
+    and interactive_shell
+  output: >
+    Interactive shell in container
+    (user=%user.name container=%container.id image=%container.image.repository
+     command=%proc.cmdline parent=%proc.pname)
+  priority: WARNING
+  tags: [container, shell, mitre_execution]
+
+- rule: Privileged container started
+  desc: Detects creation of a privileged container, which weakens isolation boundaries.
+  condition: >
+    container_started
+    and privileged_container
+  output: >
+    Privileged container started
+    (container=%container.id image=%container.image.repository
+     user=%user.name privileged=%container.privileged)
+  priority: WARNING
+  tags: [container, privilege_escalation, mitre_privilege_escalation]
+
+- rule: Container mounted sensitive host path
+  desc: Container started with a bind mount targeting sensitive host paths.
+  condition: >
+    container_started
+    and sensitive_mount
+  output: >
+    Container started with sensitive host mount
+    (container=%container.id image=%container.image.repository mounts=%container.mounts)
+  priority: NOTICE
+  tags: [container, mount, mitre_initial_access]

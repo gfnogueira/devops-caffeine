@@ -1,0 +1,22 @@
+- rule: Write to system persistence path
+  desc: Process wrote to a path commonly used to establish persistence (cron, systemd, rc).
+  condition: >
+    write_to_persistence_paths
+    and not proc.name in (apt, dpkg, rpm, yum, dnf, systemctl, useradd)
+  output: >
+    Write to persistence path
+    (user=%user.name proc=%proc.name cmd=%proc.cmdline file=%fd.name container=%container.id)
+  priority: WARNING
+  tags: [persistence, mitre_persistence]
+
+- rule: New scheduled task created via crontab
+  desc: A process invoked the crontab binary to register or replace a scheduled job.
+  condition: >
+    spawned_process
+    and proc.name = crontab
+    and proc.args contains "-"
+  output: >
+    crontab invoked to modify scheduled jobs
+    (user=%user.name proc=%proc.name cmd=%proc.cmdline container=%container.id)
+  priority: NOTICE
+  tags: [persistence, cron, mitre_persistence]

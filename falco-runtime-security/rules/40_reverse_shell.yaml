@@ -1,0 +1,33 @@
+- macro: reverse_shell_pattern
+  condition: >
+    (proc.cmdline contains "bash -i"
+     or proc.cmdline contains "sh -i"
+     or proc.cmdline contains "/dev/tcp/"
+     or proc.cmdline contains "nc -e"
+     or proc.cmdline contains "ncat -e"
+     or proc.cmdline contains "socat exec"
+     or proc.cmdline contains "python -c 'import socket"
+     or proc.cmdline contains "perl -e 'use Socket")
+
+- rule: Reverse shell command pattern detected
+  desc: Process command line matches a known reverse shell invocation pattern.
+  condition: >
+    spawned_process
+    and reverse_shell_pattern
+  output: >
+    Possible reverse shell pattern detected
+    (user=%user.name proc=%proc.name cmd=%proc.cmdline parent=%proc.pname container=%container.id)
+  priority: CRITICAL
+  tags: [reverse_shell, mitre_command_and_control]
+
+- rule: Shell stdin/stdout/stderr bound to network socket
+  desc: A shell process has standard streams redirected to a network file descriptor.
+  condition: >
+    spawned_process
+    and shell_binaries
+    and (fd.type = ipv4 or fd.type = ipv6)
+  output: >
+    Shell streams bound to socket (possible reverse shell)
+    (proc=%proc.name cmd=%proc.cmdline fd=%fd.name container=%container.id)
+  priority: CRITICAL
+  tags: [reverse_shell, mitre_command_and_control]

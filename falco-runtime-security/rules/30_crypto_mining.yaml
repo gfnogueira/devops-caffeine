@@ -1,0 +1,32 @@
+- list: crypto_mining_binaries
+  items: [xmrig, ethminer, minerd, t-rex, lolMiner, nbminer, cgminer, bfgminer]
+
+- list: crypto_mining_pool_domains
+  items:
+    - pool.minexmr.com
+    - xmr.pool.minergate.com
+    - pool.supportxmr.com
+    - randomxmonero.hashvault.pro
+    - de.minexmr.com
+
+- rule: Known crypto miner binary executed
+  desc: A binary whose name matches a well-known crypto miner family was executed.
+  condition: >
+    spawned_process
+    and proc.name in (crypto_mining_binaries)
+  output: >
+    Crypto miner binary executed
+    (user=%user.name proc=%proc.name cmd=%proc.cmdline container=%container.id)
+  priority: CRITICAL
+  tags: [cryptomining, mitre_impact]
+
+- rule: Outbound connection to known mining pool
+  desc: Process initiated an outbound connection to a host commonly used as a mining pool.
+  condition: >
+    outbound
+    and fd.sip.name in (crypto_mining_pool_domains)
+  output: >
+    Connection to known mining pool
+    (proc=%proc.name dest=%fd.sip.name:%fd.sport container=%container.id)
+  priority: CRITICAL
+  tags: [cryptomining, network, mitre_impact]

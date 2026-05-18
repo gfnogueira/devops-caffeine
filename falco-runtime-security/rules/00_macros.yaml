@@ -1,0 +1,45 @@
+- macro: shell_binaries
+  condition: >
+    proc.name in (bash, sh, dash, ash, zsh, ksh, csh, tcsh, fish)
+
+- macro: interactive_shell
+  condition: >
+    shell_binaries
+    and proc.tty != 0
+    and (proc.pname exists)
+
+- macro: sensitive_secret_paths
+  condition: >
+    fd.name startswith /etc/shadow
+    or fd.name startswith /etc/sudoers
+    or fd.name startswith /root/.ssh/
+    or fd.name startswith /home and fd.name endswith /.ssh/id_rsa
+    or fd.name startswith /home and fd.name endswith /.ssh/id_ed25519
+
+- macro: container_workload
+  condition: >
+    container.id != "host"
+
+- macro: privileged_container
+  condition: >
+    container.privileged = true
+
+- macro: sensitive_mount
+  condition: >
+    container.mounts contains "/var/run/docker.sock"
+    or container.mounts contains "/proc"
+    or container.mounts contains "/etc"
+
+- macro: write_to_persistence_paths
+  condition: >
+    evt.type in (openat, openat2, open, creat)
+    and (
+      fd.name startswith /etc/cron.d/
+      or fd.name startswith /etc/cron.hourly/
+      or fd.name startswith /etc/cron.daily/
+      or fd.name startswith /etc/cron.weekly/
+      or fd.name startswith /etc/systemd/system/
+      or fd.name startswith /etc/rc.d/
+      or fd.name = /etc/rc.local
+    )
+    and (evt.is_open_write = true)

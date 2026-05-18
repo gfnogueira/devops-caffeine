@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
 
-.PHONY: up down restart status logs events smoke
+.PHONY: up down restart status logs events smoke reload
 
 up:
 	$(COMPOSE) up -d
@@ -23,3 +23,6 @@ events:
 
 smoke:
 	$(COMPOSE) exec -T falco falco --version
+
+reload:
+	$(COMPOSE) kill -s SIGHUP falco
