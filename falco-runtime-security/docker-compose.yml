@@ -35,10 +35,9 @@ services:
     ports:
       - "${SIDEKICK_LISTEN_PORT:-2801}:2801"
     environment:
-      LISTENPORT: "2801"
-      LOGLEVEL: "${SIDEKICK_WEBUI_LOGLEVEL:-info}"
-      WEBUI_URL: "http://falcosidekick-ui:2802"
-      STDOUT_MINIMUMPRIORITY: "debug"
+      CONFIG_FILE: /etc/falcosidekick/sidekick.yaml
+    volumes:
+      - ./config/sidekick.yaml:/etc/falcosidekick/sidekick.yaml:ro
     restart: unless-stopped
 
   falcosidekick-ui:

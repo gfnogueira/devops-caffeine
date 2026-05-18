@@ -1,0 +1,43 @@
+listenPort: 2801
+debug: false
+mutualtls: false
+checkcert: false
+
+customfields:
+  environment: local
+  cluster: poc
+
+webui:
+  url: http://falcosidekick-ui:2802
+  loglevel: info
+
+stdout:
+  minimumpriority: debug
+
+webhook:
+  address: ""
+  minimumpriority: warning
+  method: POST
+  customHeaders: {}
+
+alertmanager:
+  hostport: ""
+  endpoint: /api/v2/alerts
+  minimumpriority: warning
+  expiresafter: 0
+
+elasticsearch:
+  hostport: ""
+  index: falco
+  minimumpriority: warning
+
+slack:
+  webhookurl: ""
+  channel: ""
+  username: falco
+  minimumpriority: critical
+  messageformat: long
+
+discord:
+  webhookurl: ""
+  minimumpriority: critical
