@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
 
-.PHONY: up down restart status logs events smoke reload outputs
+.PHONY: up down restart status logs events smoke reload outputs simulate
 
 up:
 	$(COMPOSE) up -d
@@ -29,3 +29,6 @@ reload:
 
 outputs:
 	bash scripts/test_outputs.sh
+
+simulate:
+	bash scripts/simulate/run_all.sh
