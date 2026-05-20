@@ -50,3 +50,32 @@ make up
 make smoke
 make logs
 ```
+
+## Runtime Sequence
+
+```bash
+make up         # Start Falco + Falcosidekick + Falcosidekick-UI
+make smoke      # Confirm Falco binary and driver are ready
+make outputs    # Send synthetic events through Falcosidekick to test routing
+make simulate   # Dispatch every threat simulation in sequence
+make validate   # Assert each rule fired by parsing the event log
+make health     # Daemon, rules, sidekick metrics, UI reachability
+make bench      # Average detection latency for a sample of simulations
+```
+
+## Detection Coverage
+
+| Category | File | Example rule |
+| --- | --- | --- |
+| Container security | `rules/10_container_security.yaml` | Interactive shell spawned in container |
+| Secrets access | `rules/20_secrets_access.yaml` | Read of sensitive secret file |
+| Crypto mining | `rules/30_crypto_mining.yaml` | Known crypto miner binary executed |
+| Reverse shell | `rules/40_reverse_shell.yaml` | Reverse shell command pattern detected |
+| Persistence | `rules/50_persistence.yaml` | Write to system persistence path |
+
+## Validation Mapping
+
+Each script in `scripts/simulate/` is mapped to the rule it must trigger inside
+`scripts/lib/detection_matchers.py`. The validation harness asserts coverage by
+running every simulation and confirming each expected rule appears in the Falco
+event log within the configured timeout.
