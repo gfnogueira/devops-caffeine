@@ -1,6 +1,6 @@
 # Falco Runtime Security
 
-Local Proof of Concept for runtime threat detection on containerized workloads
+PoC for runtime threat detection on containerized workloads
 using Falco, the CNCF runtime security project.
 
 ## Objective
