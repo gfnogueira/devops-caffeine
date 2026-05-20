@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
 
-.PHONY: up down restart status logs events smoke reload outputs simulate
+.PHONY: up down restart status logs events smoke reload outputs simulate validate
 
 up:
 	$(COMPOSE) up -d
@@ -32,3 +32,6 @@ outputs:
 
 simulate:
 	bash scripts/simulate/run_all.sh
+
+validate:
+	cd scripts && python3 validate_detections.py
