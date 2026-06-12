@@ -1,0 +1,4 @@
+# Triaged findings. Each entry must justify why it stays unblocked.
+# Format: <CVE-ID>  # owner, expiry (YYYY-MM-DD), short reason.
+
+# CVE-2023-44487  # platform, 2026-09-01, mitigated at the LB tier.

@@ -1,0 +1,13 @@
+# Intentionally outdated and misconfigured. Used as scan target only.
+FROM python:3.9.0-slim
+
+RUN apt-get update && apt-get install -y curl=7.* git \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY . /app
+
+RUN pip install --no-cache-dir requests==2.20.0 flask==1.0
+
+EXPOSE 5000
+CMD ["python", "app.py"]

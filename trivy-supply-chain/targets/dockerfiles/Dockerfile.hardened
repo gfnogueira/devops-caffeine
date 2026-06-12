@@ -1,0 +1,18 @@
+# Reference baseline. Pinned digests and least-privilege user.
+FROM python:3.12.4-slim@sha256:740d94a19218c8dd584b92f804b1158f85b0d241e5215ea26ed2dcade2b9d138
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --create-home --uid 10001 app
+WORKDIR /home/app
+USER app
+
+COPY --chown=app:app requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+COPY --chown=app:app . .
+
+EXPOSE 8080
+CMD ["python", "-m", "app"]
