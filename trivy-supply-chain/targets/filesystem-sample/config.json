@@ -1,0 +1,12 @@
+{
+  "service": "billing",
+  "database": {
+    "host": "billing-db.internal",
+    "username": "billing",
+    "password": "p@ssw0rd!2024"
+  },
+  "integrations": {
+    "slack_webhook": "https://hooks.example.invalid/services/T00000000/B00000000/REDACTEDplaceholdervalue",
+    "sendgrid_api_key": "SG.aaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+}
