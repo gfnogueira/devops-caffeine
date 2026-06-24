@@ -1,0 +1,4 @@
+.events/
+*.kubeconfig
+*.tar
+.DS_Store

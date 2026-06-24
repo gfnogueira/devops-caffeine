@@ -1,0 +1,23 @@
+# Task runner for the Tetragon PoC. Requires `just` (https://just.systems).
+
+cluster := "tetragon-poc"
+ns      := "evaluation"
+
+default:
+    @just --list
+
+up:
+    bash playbook/bootstrap.sh
+
+down:
+    bash playbook/teardown.sh
+
+events:
+    bash playbook/tail.sh
+
+ctx:
+    kubectl config use-context kind-{{cluster}}
+
+status:
+    kubectl -n kube-system get daemonset tetragon
+    kubectl get tracingpolicies
