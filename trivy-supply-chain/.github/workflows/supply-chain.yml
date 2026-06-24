@@ -1,0 +1,39 @@
+name: trivy-supply-chain
+
+on:
+  pull_request:
+    paths:
+      - "trivy-supply-chain/**"
+  push:
+    branches: [main]
+    paths:
+      - "trivy-supply-chain/**"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: trivy-supply-chain
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Trivy DB
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ runner.os }}-${{ hashFiles('**/.trivyignore') }}
+          restore-keys: trivy-db-${{ runner.os }}-
+
+      - name: IaC + secret gate
+        env:
+          FAIL_SEVERITY: HIGH,CRITICAL
+          GATE_IMAGE: "0"
+        run: bash runbook/ci_gate.sh
+
+      - name: Upload IaC SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-supply-chain/reports/iac.sarif
+          category: trivy-iac
