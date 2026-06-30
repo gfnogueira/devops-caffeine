@@ -1,0 +1,24 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: trace-egress-watchlist
+  namespace: evaluation
+spec:
+  kprobes:
+    - call: tcp_connect
+      syscall: false
+      args:
+        - index: 0
+          type: sock
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: DAddr
+              values:
+                - 1.1.1.1/32
+                - 8.8.8.8/32
+                - 169.254.169.254/32
+        - matchArgs:
+            - index: 0
+              operator: DPort
+              values: ["4444", "8333", "9999", "31337"]

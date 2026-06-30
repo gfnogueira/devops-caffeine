@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: trace-dns-resolve
+  namespace: evaluation
+spec:
+  kprobes:
+    - call: udp_sendmsg
+      syscall: false
+      args:
+        - index: 0
+          type: sock
+        - index: 1
+          type: skb
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: DPort
+              values: ["53"]
