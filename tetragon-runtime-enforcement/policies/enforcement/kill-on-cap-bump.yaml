@@ -1,0 +1,22 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: enforce-no-cap-bump
+  namespace: evaluation
+spec:
+  kprobes:
+    - call: __sys_capset
+      syscall: true
+      args:
+        - index: 0
+          type: int
+        - index: 1
+          type: int
+      selectors:
+        - matchPIDs:
+            - operator: NotIn
+              followForks: true
+              isNamespacePID: true
+              values: [0, 1]
+          matchActions:
+            - action: Sigkill

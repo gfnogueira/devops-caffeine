@@ -1,0 +1,26 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: enforce-no-shell-spawn
+  namespace: evaluation
+spec:
+  kprobes:
+    - call: __x64_sys_execve
+      syscall: true
+      args:
+        - index: 0
+          type: string
+        - index: 1
+          type: char_buf
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: Postfix
+              values:
+                - "/sh"
+                - "/bash"
+                - "/dash"
+                - "/zsh"
+                - "/ksh"
+          matchActions:
+            - action: Sigkill

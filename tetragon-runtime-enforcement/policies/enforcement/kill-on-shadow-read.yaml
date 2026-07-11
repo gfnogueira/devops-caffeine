@@ -1,0 +1,21 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: enforce-no-shadow-read
+  namespace: evaluation
+spec:
+  kprobes:
+    - call: security_file_open
+      syscall: false
+      args:
+        - index: 0
+          type: file
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: Equal
+              values:
+                - "/etc/shadow"
+                - "/etc/gshadow"
+          matchActions:
+            - action: Sigkill
