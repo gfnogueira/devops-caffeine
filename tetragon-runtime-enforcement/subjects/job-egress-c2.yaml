@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: egress-c2
+  namespace: evaluation
+  labels:
+    fires-policy: trace-egress-watchlist
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: caller
+          image: curlimages/curl:8.9.1
+          command:
+            - sh
+            - -c
+            - "curl -m 3 -s http://1.1.1.1:31337 || true; sleep 2"

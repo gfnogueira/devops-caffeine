@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cap-bump
+  namespace: evaluation
+  labels:
+    fires-policy: enforce-no-cap-bump
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: capset
+          image: alpine:3.20
+          command:
+            - sh
+            - -c
+            - "apk add --no-cache libcap >/dev/null && capsh --drop=cap_chown -- || true; sleep 2"
+          securityContext:
+            capabilities:
+              add: ["CAP_SETPCAP"]

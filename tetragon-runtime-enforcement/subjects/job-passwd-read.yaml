@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shadow-read
+  namespace: evaluation
+  labels:
+    fires-policy: trace-sensitive-file-reads
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: peek
+          image: busybox:1.37
+          command: ["sh", "-c", "cat /etc/shadow || true; sleep 1"]
+          securityContext:
+            runAsUser: 0

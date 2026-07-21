@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shell-spawn
+  namespace: evaluation
+  labels:
+    fires-policy: enforce-no-shell-spawn
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: launcher
+          image: alpine:3.20
+          command:
+            - sh
+            - -c
+            - "/bin/sh -c 'echo spawned'; sleep 2"
