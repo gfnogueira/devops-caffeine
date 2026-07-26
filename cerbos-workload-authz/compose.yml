@@ -1,0 +1,19 @@
+services:
+  cerbos:
+    image: ghcr.io/cerbos/cerbos:0.42.0
+    command: ["server", "--config=/config/cerbos.yaml"]
+    ports:
+      - "3592:3592"
+      - "3593:3593"
+    volumes:
+      - ./stack/cerbos/config.yaml:/config/cerbos.yaml:ro
+      - ./policies:/policies:ro
+      - audit:/audit
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://localhost:3592/_cerbos/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  audit:

@@ -1,0 +1,14 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  importDerivedRoles:
+    - workload_identity
+  resource: service_call
+  rules:
+    - actions: ["invoke"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["same_env_caller"]
+
+    - actions: ["invoke"]
+      effect: EFFECT_DENY
+      roles: ["*"]

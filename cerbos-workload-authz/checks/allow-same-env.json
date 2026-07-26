@@ -1,0 +1,24 @@
+{
+  "requestId": "allow-same-env",
+  "principal": {
+    "id": "svc-orders",
+    "roles": ["workload"],
+    "attr": {
+      "environment": "staging",
+      "namespace": "commerce"
+    }
+  },
+  "resources": [
+    {
+      "actions": ["invoke"],
+      "resource": {
+        "kind": "service_call",
+        "id": "svc-payments/charge",
+        "attr": {
+          "environment": "staging",
+          "callee": "svc-payments"
+        }
+      }
+    }
+  ]
+}
