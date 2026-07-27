@@ -1,0 +1,67 @@
+---
+name: service_call_test
+description: Non-human caller invoking a target service.
+
+principals:
+  orders_staging:
+    id: svc-orders
+    roles: ["workload"]
+    attr:
+      environment: staging
+      namespace: commerce
+
+  orders_prod:
+    id: svc-orders
+    roles: ["workload"]
+    attr:
+      environment: prod
+      namespace: commerce
+
+resources:
+  payments_staging:
+    kind: service_call
+    id: svc-payments/charge
+    attr:
+      environment: staging
+      callee: svc-payments
+
+  payments_prod:
+    kind: service_call
+    id: svc-payments/charge
+    attr:
+      environment: prod
+      callee: svc-payments
+
+tests:
+  - name: same-env is allowed
+    input:
+      principals: [orders_staging]
+      resources: [payments_staging]
+      actions: [invoke]
+    expected:
+      - principal: orders_staging
+        resource: payments_staging
+        actions:
+          invoke: EFFECT_ALLOW
+
+  - name: cross-env is denied
+    input:
+      principals: [orders_staging]
+      resources: [payments_prod]
+      actions: [invoke]
+    expected:
+      - principal: orders_staging
+        resource: payments_prod
+        actions:
+          invoke: EFFECT_DENY
+
+  - name: prod-to-prod is allowed
+    input:
+      principals: [orders_prod]
+      resources: [payments_prod]
+      actions: [invoke]
+    expected:
+      - principal: orders_prod
+        resource: payments_prod
+        actions:
+          invoke: EFFECT_ALLOW
