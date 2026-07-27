@@ -1,0 +1,25 @@
+{
+  "requestId": "allow-ci-staging",
+  "principal": {
+    "id": "gha-runner/repo-x/job-4218",
+    "roles": ["ci_runner"],
+    "attr": {
+      "event": "push",
+      "ref": "refs/heads/main",
+      "workflow": "deploy-staging.yml",
+      "repository": "acme/service-orders"
+    }
+  },
+  "resources": [
+    {
+      "actions": ["deploy"],
+      "resource": {
+        "kind": "ci_deployment",
+        "id": "orders-api",
+        "attr": {
+          "environment": "staging"
+        }
+      }
+    }
+  ]
+}

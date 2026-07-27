@@ -1,0 +1,27 @@
+apiVersion: api.cerbos.dev/v1
+derivedRoles:
+  name: ci_identity
+  definitions:
+    - name: default_branch_push
+      parentRoles: ["ci_runner"]
+      condition:
+        match:
+          all:
+            of:
+              - expr: request.principal.attr.event == "push"
+              - expr: request.principal.attr.ref == "refs/heads/main"
+
+    - name: pull_request_run
+      parentRoles: ["ci_runner"]
+      condition:
+        match:
+          expr: request.principal.attr.event == "pull_request"
+
+    - name: release_tag_run
+      parentRoles: ["ci_runner"]
+      condition:
+        match:
+          all:
+            of:
+              - expr: request.principal.attr.event == "push"
+              - expr: request.principal.attr.ref.startsWith("refs/tags/v")

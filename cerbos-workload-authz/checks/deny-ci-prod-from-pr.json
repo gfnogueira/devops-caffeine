@@ -1,0 +1,25 @@
+{
+  "requestId": "deny-ci-prod-from-pr",
+  "principal": {
+    "id": "gha-runner/repo-x/job-4227",
+    "roles": ["ci_runner"],
+    "attr": {
+      "event": "pull_request",
+      "ref": "refs/pull/318/merge",
+      "workflow": "deploy-staging.yml",
+      "repository": "acme/service-orders"
+    }
+  },
+  "resources": [
+    {
+      "actions": ["deploy"],
+      "resource": {
+        "kind": "ci_deployment",
+        "id": "orders-api",
+        "attr": {
+          "environment": "prod"
+        }
+      }
+    }
+  ]
+}

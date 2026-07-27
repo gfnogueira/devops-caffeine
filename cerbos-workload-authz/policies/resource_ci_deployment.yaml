@@ -1,0 +1,29 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  importDerivedRoles:
+    - ci_identity
+  resource: ci_deployment
+  rules:
+    # Staging can go out from any successful CI run on a PR or main.
+    - actions: ["deploy"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["pull_request_run", "default_branch_push"]
+      condition:
+        match:
+          expr: request.resource.attr.environment == "staging"
+
+    # Prod requires a signed release tag and a workflow allow-list.
+    - actions: ["deploy"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["release_tag_run"]
+      condition:
+        match:
+          all:
+            of:
+              - expr: request.resource.attr.environment == "prod"
+              - expr: request.principal.attr.workflow in ["release.yml", "hotfix.yml"]
+
+    - actions: ["deploy"]
+      effect: EFFECT_DENY
+      roles: ["*"]
