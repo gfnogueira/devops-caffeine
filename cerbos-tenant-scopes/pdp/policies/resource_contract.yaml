@@ -1,0 +1,29 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  scope: saas
+  importDerivedRoles:
+    - tenant_member
+  resource: contract
+  rules:
+    - actions: ["*"]
+      effect: EFFECT_DENY
+      derivedRoles: ["cross_tenant"]
+
+    - actions: ["view"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tenant_owner"]
+
+    - actions: ["create", "edit"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tenant_owner"]
+      roles: ["editor", "manager", "admin"]
+
+    - actions: ["approve"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tenant_owner"]
+      roles: ["manager", "admin"]
+
+    - actions: ["*"]
+      effect: EFFECT_DENY
+      roles: ["*"]
