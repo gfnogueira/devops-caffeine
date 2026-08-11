@@ -1,0 +1,16 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  scope: saas.globex
+  resource: contract
+  rules:
+    - actions: ["approve"]
+      effect: EFFECT_DENY
+      roles: ["*"]
+      condition:
+        match:
+          expr: request.resource.attr.value > request.principal.attr.approval_limit
+
+    - actions: ["delete"]
+      effect: EFFECT_DENY
+      roles: ["*"]

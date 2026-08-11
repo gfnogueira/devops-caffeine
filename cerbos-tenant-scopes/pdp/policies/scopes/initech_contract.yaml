@@ -1,0 +1,16 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  scope: saas.initech
+  resource: contract
+  rules:
+    - actions: ["create"]
+      effect: EFFECT_DENY
+      roles: ["*"]
+      condition:
+        match:
+          expr: request.resource.attr.tenant_contract_count >= 5
+
+    - actions: ["export"]
+      effect: EFFECT_DENY
+      roles: ["*"]
