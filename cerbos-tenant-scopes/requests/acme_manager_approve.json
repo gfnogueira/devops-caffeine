@@ -1,0 +1,19 @@
+{
+  "requestId": "acme-manager-approve",
+  "principal": {
+    "id": "u-alice",
+    "roles": ["manager", "member"],
+    "attr": { "tenant": "acme" }
+  },
+  "resources": [
+    {
+      "actions": ["view", "edit", "approve"],
+      "resource": {
+        "kind": "contract",
+        "id": "c-001",
+        "scope": "saas.acme",
+        "attr": { "tenant": "acme", "value": 5000 }
+      }
+    }
+  ]
+}

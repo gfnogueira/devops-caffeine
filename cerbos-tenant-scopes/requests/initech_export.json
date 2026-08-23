@@ -1,0 +1,19 @@
+{
+  "requestId": "initech-export",
+  "principal": {
+    "id": "u-carol",
+    "roles": ["admin", "member"],
+    "attr": { "tenant": "initech" }
+  },
+  "resources": [
+    {
+      "actions": ["export"],
+      "resource": {
+        "kind": "contract",
+        "id": "c-003",
+        "scope": "saas.initech",
+        "attr": { "tenant": "initech" }
+      }
+    }
+  ]
+}

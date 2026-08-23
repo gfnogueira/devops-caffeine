@@ -1,0 +1,19 @@
+{
+  "requestId": "globex-manager-approve-high",
+  "principal": {
+    "id": "u-bob",
+    "roles": ["manager", "member"],
+    "attr": { "tenant": "globex", "approval_limit": 10000 }
+  },
+  "resources": [
+    {
+      "actions": ["approve"],
+      "resource": {
+        "kind": "contract",
+        "id": "c-002",
+        "scope": "saas.globex",
+        "attr": { "tenant": "globex", "value": 50000 }
+      }
+    }
+  ]
+}
