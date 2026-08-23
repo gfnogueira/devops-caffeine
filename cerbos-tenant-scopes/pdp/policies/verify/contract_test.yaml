@@ -1,0 +1,105 @@
+---
+name: contract_test
+description: Same base policy, three tenants, three effects.
+
+principals:
+  acme_admin:
+    id: u-alice
+    roles: ["admin", "member"]
+    attr:
+      tenant: acme
+
+  globex_manager_low:
+    id: u-bob
+    roles: ["manager", "member"]
+    attr:
+      tenant: globex
+      approval_limit: 10000
+
+  globex_manager_high:
+    id: u-bianca
+    roles: ["manager", "member"]
+    attr:
+      tenant: globex
+      approval_limit: 100000
+
+  initech_editor:
+    id: u-carol
+    roles: ["editor", "member"]
+    attr:
+      tenant: initech
+
+resources:
+  acme_contract:
+    kind: contract
+    id: c-001
+    scope: saas.acme
+    attr:
+      tenant: acme
+      value: 5000
+
+  globex_high_value:
+    kind: contract
+    id: c-002
+    scope: saas.globex
+    attr:
+      tenant: globex
+      value: 50000
+
+  initech_at_cap:
+    kind: contract
+    id: c-003
+    scope: saas.initech
+    attr:
+      tenant: initech
+      value: 100
+      tenant_contract_count: 5
+
+tests:
+  - name: acme admin can delete
+    input:
+      principals: [acme_admin]
+      resources: [acme_contract]
+      actions: [view, edit, delete]
+    expected:
+      - principal: acme_admin
+        resource: acme_contract
+        actions:
+          view: EFFECT_ALLOW
+          edit: EFFECT_ALLOW
+          delete: EFFECT_ALLOW
+
+  - name: globex manager under limit approves
+    input:
+      principals: [globex_manager_high]
+      resources: [globex_high_value]
+      actions: [approve]
+    expected:
+      - principal: globex_manager_high
+        resource: globex_high_value
+        actions:
+          approve: EFFECT_ALLOW
+
+  - name: globex manager over limit blocked
+    input:
+      principals: [globex_manager_low]
+      resources: [globex_high_value]
+      actions: [approve, delete]
+    expected:
+      - principal: globex_manager_low
+        resource: globex_high_value
+        actions:
+          approve: EFFECT_DENY
+          delete: EFFECT_DENY
+
+  - name: initech free tier caps and export
+    input:
+      principals: [initech_editor]
+      resources: [initech_at_cap]
+      actions: [create, export]
+    expected:
+      - principal: initech_editor
+        resource: initech_at_cap
+        actions:
+          create: EFFECT_DENY
+          export: EFFECT_DENY
