@@ -1,0 +1,27 @@
+apiVersion: api.cerbos.dev/v1
+derivedRoles:
+  name: persona
+  definitions:
+    - name: tier1_persona
+      parentRoles: ["agent_persona"]
+      condition:
+        match:
+          expr: request.principal.attr.persona == "tier1"
+
+    - name: tier2_persona
+      parentRoles: ["agent_persona"]
+      condition:
+        match:
+          expr: request.principal.attr.persona == "tier2"
+
+    - name: admin_persona
+      parentRoles: ["agent_persona"]
+      condition:
+        match:
+          expr: request.principal.attr.persona == "admin"
+
+    - name: same_tenant
+      parentRoles: ["agent_persona"]
+      condition:
+        match:
+          expr: request.principal.attr.tenant == request.resource.attr.tenant
