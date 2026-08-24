@@ -1,0 +1,33 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  importDerivedRoles:
+    - persona
+  resource: tool
+  rules:
+    - actions: ["invoke"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tier1_persona"]
+      condition:
+        match:
+          expr: request.resource.attr.risk == "low"
+
+    - actions: ["invoke"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tier2_persona"]
+      condition:
+        match:
+          any:
+            of:
+              - expr: request.resource.attr.risk == "low"
+              - expr: >
+                  request.resource.attr.name == "refund_order"
+                  && request.resource.attr.max_amount <= 500
+
+    - actions: ["invoke"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["admin_persona"]
+
+    - actions: ["invoke"]
+      effect: EFFECT_DENY
+      roles: ["*"]

@@ -1,0 +1,15 @@
+tools:
+  - name: search_kb
+    risk: low
+  - name: open_ticket
+    risk: low
+  - name: refund_order
+    risk: medium
+    max_amount: 500
+  - name: refund_order_high
+    risk: high
+    max_amount: 10000
+  - name: read_user_pii
+    risk: high
+  - name: rotate_api_key
+    risk: high
