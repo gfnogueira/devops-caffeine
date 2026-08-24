@@ -1,0 +1,38 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  importDerivedRoles:
+    - persona
+  resource: document
+  rules:
+    - actions: ["read"]
+      effect: EFFECT_DENY
+      roles: ["*"]
+      condition:
+        match:
+          expr: request.principal.attr.tenant != request.resource.attr.tenant
+
+    - actions: ["read"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tier1_persona", "same_tenant"]
+      condition:
+        match:
+          expr: request.resource.attr.label == "public"
+
+    - actions: ["read"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tier2_persona", "same_tenant"]
+      condition:
+        match:
+          any:
+            of:
+              - expr: request.resource.attr.label == "public"
+              - expr: request.resource.attr.label == "internal"
+
+    - actions: ["read"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["admin_persona", "same_tenant"]
+
+    - actions: ["read"]
+      effect: EFFECT_DENY
+      roles: ["*"]

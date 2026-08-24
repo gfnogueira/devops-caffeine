@@ -1,0 +1,8 @@
+{"id": "d001", "tenant": "acme", "label": "public", "text": "Return policy allows refunds within 30 days"}
+{"id": "d002", "tenant": "acme", "label": "public", "text": "Order tracking numbers are visible in the account page"}
+{"id": "d003", "tenant": "acme", "label": "internal", "text": "Escalation rota for tier2 refund exceptions above 500"}
+{"id": "d004", "tenant": "acme", "label": "pii", "owner": "u-alice", "text": "Contact record for u-alice email and phone"}
+{"id": "d005", "tenant": "acme", "label": "pii", "owner": "u-bob", "text": "Contact record for u-bob email and phone"}
+{"id": "d006", "tenant": "globex", "label": "public", "text": "Return policy for globex customers"}
+{"id": "d007", "tenant": "globex", "label": "internal", "text": "Globex payment gateway maintenance window"}
+{"id": "d008", "tenant": "globex", "label": "pii", "owner": "u-charlie", "text": "Contact record for u-charlie"}
