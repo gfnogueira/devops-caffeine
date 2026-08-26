@@ -1,0 +1,103 @@
+---
+name: tool_use_test
+description: Persona to tool invocation matrix.
+
+principals:
+  tier1:
+    id: agent-1
+    roles: ["agent_persona"]
+    attr:
+      persona: tier1
+      tenant: acme
+
+  tier2:
+    id: agent-2
+    roles: ["agent_persona"]
+    attr:
+      persona: tier2
+      tenant: acme
+
+  admin:
+    id: agent-3
+    roles: ["agent_persona"]
+    attr:
+      persona: admin
+      tenant: acme
+
+resources:
+  search_kb:
+    kind: tool
+    id: search_kb
+    attr:
+      name: search_kb
+      risk: low
+      max_amount: 0
+
+  refund_low:
+    kind: tool
+    id: refund_order
+    attr:
+      name: refund_order
+      risk: medium
+      max_amount: 500
+
+  refund_high:
+    kind: tool
+    id: refund_order_high
+    attr:
+      name: refund_order_high
+      risk: high
+      max_amount: 10000
+
+  rotate_key:
+    kind: tool
+    id: rotate_api_key
+    attr:
+      name: rotate_api_key
+      risk: high
+
+tests:
+  - name: tier1 gets low risk only
+    input:
+      principals: [tier1]
+      resources: [search_kb, refund_low, rotate_key]
+      actions: [invoke]
+    expected:
+      - principal: tier1
+        resource: search_kb
+        actions: { invoke: EFFECT_ALLOW }
+      - principal: tier1
+        resource: refund_low
+        actions: { invoke: EFFECT_DENY }
+      - principal: tier1
+        resource: rotate_key
+        actions: { invoke: EFFECT_DENY }
+
+  - name: tier2 gets low plus capped refund
+    input:
+      principals: [tier2]
+      resources: [refund_low, refund_high, rotate_key]
+      actions: [invoke]
+    expected:
+      - principal: tier2
+        resource: refund_low
+        actions: { invoke: EFFECT_ALLOW }
+      - principal: tier2
+        resource: refund_high
+        actions: { invoke: EFFECT_DENY }
+      - principal: tier2
+        resource: rotate_key
+        actions: { invoke: EFFECT_DENY }
+
+  - name: admin gets everything
+    input:
+      principals: [admin]
+      resources: [refund_high, rotate_key]
+      actions: [invoke]
+    expected:
+      - principal: admin
+        resource: refund_high
+        actions: { invoke: EFFECT_ALLOW }
+      - principal: admin
+        resource: rotate_key
+        actions: { invoke: EFFECT_ALLOW }
