@@ -1,0 +1,91 @@
+---
+name: document_test
+description: Document read matrix across personas and tenants.
+
+principals:
+  acme_tier1:
+    id: agent-1
+    roles: ["agent_persona"]
+    attr:
+      persona: tier1
+      tenant: acme
+
+  acme_tier2:
+    id: agent-2
+    roles: ["agent_persona"]
+    attr:
+      persona: tier2
+      tenant: acme
+
+  globex_tier1:
+    id: agent-4
+    roles: ["agent_persona"]
+    attr:
+      persona: tier1
+      tenant: globex
+
+resources:
+  acme_public:
+    kind: document
+    id: d001
+    attr:
+      tenant: acme
+      label: public
+
+  acme_internal:
+    kind: document
+    id: d003
+    attr:
+      tenant: acme
+      label: internal
+
+  acme_pii:
+    kind: document
+    id: d004
+    attr:
+      tenant: acme
+      label: pii
+      owner: u-alice
+
+tests:
+  - name: tier1 in tenant sees public only
+    input:
+      principals: [acme_tier1]
+      resources: [acme_public, acme_internal, acme_pii]
+      actions: [read]
+    expected:
+      - principal: acme_tier1
+        resource: acme_public
+        actions: { read: EFFECT_ALLOW }
+      - principal: acme_tier1
+        resource: acme_internal
+        actions: { read: EFFECT_DENY }
+      - principal: acme_tier1
+        resource: acme_pii
+        actions: { read: EFFECT_DENY }
+
+  - name: tier2 in tenant sees public plus internal
+    input:
+      principals: [acme_tier2]
+      resources: [acme_public, acme_internal, acme_pii]
+      actions: [read]
+    expected:
+      - principal: acme_tier2
+        resource: acme_public
+        actions: { read: EFFECT_ALLOW }
+      - principal: acme_tier2
+        resource: acme_internal
+        actions: { read: EFFECT_ALLOW }
+      - principal: acme_tier2
+        resource: acme_pii
+        actions: { read: EFFECT_DENY }
+
+  - name: cross tenant is denied outright
+    input:
+      principals: [globex_tier1]
+      resources: [acme_public]
+      actions: [read]
+    expected:
+      - principal: globex_tier1
+        resource: acme_public
+        actions: { read: EFFECT_DENY }
