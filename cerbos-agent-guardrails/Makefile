@@ -1,4 +1,4 @@
-.PHONY: up down ping test demo-tools demo-rag
+.PHONY: up down ping test demo demo-tools demo-rag
 
 up:
 	docker compose up -d
@@ -12,6 +12,8 @@ ping:
 
 test:
 	docker compose exec cerbos cerbos compile /policies --tests /policies
+
+demo: demo-tools demo-rag
 
 demo-tools:
 	python -m scripts.demo_tool_gate
