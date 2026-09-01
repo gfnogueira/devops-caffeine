@@ -1,0 +1,13 @@
+workflows:
+  - name: restart_service
+    risk: low
+  - name: run_backup
+    risk: low
+  - name: clear_cache
+    risk: medium
+  - name: rotate_secrets
+    risk: high
+  - name: deploy_hotfix
+    risk: high
+  - name: drop_customer_data
+    risk: critical

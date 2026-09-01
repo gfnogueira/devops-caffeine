@@ -1,0 +1,35 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  importDerivedRoles:
+    - persona
+  resource: workflow
+  rules:
+    - actions: ["trigger"]
+      effect: EFFECT_DENY
+      roles: ["*"]
+      condition:
+        match:
+          expr: request.resource.attr.risk == "critical"
+
+    - actions: ["trigger"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tier1_persona"]
+      condition:
+        match:
+          expr: request.resource.attr.risk == "low"
+
+    - actions: ["trigger"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["tier2_persona"]
+      condition:
+        match:
+          expr: request.resource.attr.risk in ["low", "medium"]
+
+    - actions: ["trigger"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["admin_persona"]
+
+    - actions: ["trigger"]
+      effect: EFFECT_DENY
+      roles: ["*"]
