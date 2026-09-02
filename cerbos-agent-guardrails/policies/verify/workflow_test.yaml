@@ -1,0 +1,97 @@
+---
+name: workflow_test
+description: Persona to workflow trigger matrix.
+
+principals:
+  tier1:
+    id: agent-1
+    roles: ["agent_persona"]
+    attr:
+      persona: tier1
+      tenant: acme
+
+  tier2:
+    id: agent-2
+    roles: ["agent_persona"]
+    attr:
+      persona: tier2
+      tenant: acme
+
+  admin:
+    id: agent-3
+    roles: ["agent_persona"]
+    attr:
+      persona: admin
+      tenant: acme
+
+resources:
+  restart:
+    kind: workflow
+    id: restart_service
+    attr:
+      name: restart_service
+      risk: low
+
+  clear_cache:
+    kind: workflow
+    id: clear_cache
+    attr:
+      name: clear_cache
+      risk: medium
+
+  rotate:
+    kind: workflow
+    id: rotate_secrets
+    attr:
+      name: rotate_secrets
+      risk: high
+
+  drop_data:
+    kind: workflow
+    id: drop_customer_data
+    attr:
+      name: drop_customer_data
+      risk: critical
+
+tests:
+  - name: tier1 gets low risk only
+    input:
+      principals: [tier1]
+      resources: [restart, clear_cache, rotate]
+      actions: [trigger]
+    expected:
+      - principal: tier1
+        resource: restart
+        actions: { trigger: EFFECT_ALLOW }
+      - principal: tier1
+        resource: clear_cache
+        actions: { trigger: EFFECT_DENY }
+      - principal: tier1
+        resource: rotate
+        actions: { trigger: EFFECT_DENY }
+
+  - name: tier2 covers low and medium
+    input:
+      principals: [tier2]
+      resources: [clear_cache, rotate]
+      actions: [trigger]
+    expected:
+      - principal: tier2
+        resource: clear_cache
+        actions: { trigger: EFFECT_ALLOW }
+      - principal: tier2
+        resource: rotate
+        actions: { trigger: EFFECT_DENY }
+
+  - name: even admin cannot trigger critical
+    input:
+      principals: [admin]
+      resources: [rotate, drop_data]
+      actions: [trigger]
+    expected:
+      - principal: admin
+        resource: rotate
+        actions: { trigger: EFFECT_ALLOW }
+      - principal: admin
+        resource: drop_data
+        actions: { trigger: EFFECT_DENY }
