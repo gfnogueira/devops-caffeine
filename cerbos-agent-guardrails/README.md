@@ -32,3 +32,10 @@ from their own tenant, never PII, never another tenant's records.
     agent/              authz wrapper, tool gate, rag filter
     data/               tool registry and doc corpus
     scripts/            demo runners
+
+## Threat model
+
+The PDP is the boundary. Anything that reaches the model prompt or a tool
+invocation must have been checked against a policy first. A leaked persona
+token still respects the policy caps. Copy `.env.example` to `.env` to point
+the agent at a remote PDP.
