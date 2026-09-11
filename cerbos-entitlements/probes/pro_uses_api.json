@@ -1,0 +1,26 @@
+{
+  "requestId": "pro-uses-api",
+  "principal": {
+    "id": "tenant-globex",
+    "roles": ["tenant"],
+    "attr": {
+      "plan": "pro",
+      "trial_days_left": 0,
+      "billing_status": "active"
+    }
+  },
+  "resources": [
+    {
+      "actions": ["use"],
+      "resource": {
+        "kind": "feature",
+        "id": "api_access",
+        "attr": {
+          "name": "api_access",
+          "min_plan": "pro",
+          "trial_unlocked": false
+        }
+      }
+    }
+  ]
+}

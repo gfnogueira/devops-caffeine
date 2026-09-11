@@ -1,0 +1,26 @@
+{
+  "requestId": "free-tries-sso",
+  "principal": {
+    "id": "tenant-acme",
+    "roles": ["tenant"],
+    "attr": {
+      "plan": "free",
+      "trial_days_left": 0,
+      "billing_status": "active"
+    }
+  },
+  "resources": [
+    {
+      "actions": ["use"],
+      "resource": {
+        "kind": "feature",
+        "id": "sso",
+        "attr": {
+          "name": "sso",
+          "min_plan": "enterprise",
+          "trial_unlocked": false
+        }
+      }
+    }
+  ]
+}
