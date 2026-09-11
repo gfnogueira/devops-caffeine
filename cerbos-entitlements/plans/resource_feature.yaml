@@ -1,0 +1,35 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  importDerivedRoles:
+    - plan_status
+  resource: feature
+  rules:
+    - actions: ["use"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["plan_enterprise"]
+
+    - actions: ["use"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["plan_pro"]
+      condition:
+        match:
+          expr: request.resource.attr.min_plan in ["free", "pro"]
+
+    - actions: ["use"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["plan_free"]
+      condition:
+        match:
+          expr: request.resource.attr.min_plan == "free"
+
+    - actions: ["use"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["in_trial"]
+      condition:
+        match:
+          expr: request.resource.attr.trial_unlocked == true
+
+    - actions: ["use"]
+      effect: EFFECT_DENY
+      roles: ["*"]
