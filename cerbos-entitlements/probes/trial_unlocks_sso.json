@@ -1,0 +1,26 @@
+{
+  "requestId": "trial-unlocks-sso",
+  "principal": {
+    "id": "tenant-initech",
+    "roles": ["tenant"],
+    "attr": {
+      "plan": "free",
+      "trial_days_left": 7,
+      "billing_status": "active"
+    }
+  },
+  "resources": [
+    {
+      "actions": ["use"],
+      "resource": {
+        "kind": "feature",
+        "id": "sso",
+        "attr": {
+          "name": "sso",
+          "min_plan": "enterprise",
+          "trial_unlocked": true
+        }
+      }
+    }
+  ]
+}
