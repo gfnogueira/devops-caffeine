@@ -1,0 +1,120 @@
+---
+name: feature_test
+description: Feature use per plan tier with trial exceptions.
+
+principals:
+  free_no_trial:
+    id: t-acme
+    roles: ["tenant"]
+    attr:
+      plan: free
+      trial_days_left: 0
+      billing_status: active
+
+  free_in_trial:
+    id: t-initech
+    roles: ["tenant"]
+    attr:
+      plan: free
+      trial_days_left: 7
+      billing_status: active
+
+  pro_active:
+    id: t-globex
+    roles: ["tenant"]
+    attr:
+      plan: pro
+      trial_days_left: 0
+      billing_status: active
+
+  enterprise_active:
+    id: t-massive
+    roles: ["tenant"]
+    attr:
+      plan: enterprise
+      trial_days_left: 0
+      billing_status: active
+
+resources:
+  sso:
+    kind: feature
+    id: sso
+    attr:
+      name: sso
+      min_plan: enterprise
+      trial_unlocked: true
+
+  api:
+    kind: feature
+    id: api_access
+    attr:
+      name: api_access
+      min_plan: pro
+      trial_unlocked: false
+
+  custom_domain:
+    kind: feature
+    id: custom_domain
+    attr:
+      name: custom_domain
+      min_plan: enterprise
+      trial_unlocked: false
+
+tests:
+  - name: free plan denied enterprise features
+    input:
+      principals: [free_no_trial]
+      resources: [sso, api, custom_domain]
+      actions: [use]
+    expected:
+      - principal: free_no_trial
+        resource: sso
+        actions: { use: EFFECT_DENY }
+      - principal: free_no_trial
+        resource: api
+        actions: { use: EFFECT_DENY }
+      - principal: free_no_trial
+        resource: custom_domain
+        actions: { use: EFFECT_DENY }
+
+  - name: trial unlocks flagged features
+    input:
+      principals: [free_in_trial]
+      resources: [sso, custom_domain]
+      actions: [use]
+    expected:
+      - principal: free_in_trial
+        resource: sso
+        actions: { use: EFFECT_ALLOW }
+      - principal: free_in_trial
+        resource: custom_domain
+        actions: { use: EFFECT_DENY }
+
+  - name: pro plan reaches api not sso
+    input:
+      principals: [pro_active]
+      resources: [api, sso]
+      actions: [use]
+    expected:
+      - principal: pro_active
+        resource: api
+        actions: { use: EFFECT_ALLOW }
+      - principal: pro_active
+        resource: sso
+        actions: { use: EFFECT_DENY }
+
+  - name: enterprise reaches everything
+    input:
+      principals: [enterprise_active]
+      resources: [sso, api, custom_domain]
+      actions: [use]
+    expected:
+      - principal: enterprise_active
+        resource: sso
+        actions: { use: EFFECT_ALLOW }
+      - principal: enterprise_active
+        resource: api
+        actions: { use: EFFECT_ALLOW }
+      - principal: enterprise_active
+        resource: custom_domain
+        actions: { use: EFFECT_ALLOW }
