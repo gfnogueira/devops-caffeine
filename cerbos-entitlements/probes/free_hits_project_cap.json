@@ -1,0 +1,26 @@
+{
+  "requestId": "free-hits-project-cap",
+  "principal": {
+    "id": "tenant-acme",
+    "roles": ["tenant"],
+    "attr": {
+      "plan": "free",
+      "billing_status": "active",
+      "free_limit_for": { "project": 5, "seat": 3 },
+      "pro_limit_for": { "project": 50, "seat": 25 }
+    }
+  },
+  "resources": [
+    {
+      "actions": ["consume"],
+      "resource": {
+        "kind": "quota",
+        "id": "project",
+        "attr": {
+          "kind": "project",
+          "current": 5
+        }
+      }
+    }
+  ]
+}
