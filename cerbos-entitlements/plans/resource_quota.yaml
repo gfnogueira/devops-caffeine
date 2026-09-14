@@ -1,0 +1,28 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  importDerivedRoles:
+    - plan_status
+  resource: quota
+  rules:
+    - actions: ["consume"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["plan_enterprise"]
+
+    - actions: ["consume"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["plan_pro"]
+      condition:
+        match:
+          expr: request.resource.attr.current + 1 <= request.principal.attr.pro_limit_for[request.resource.attr.kind]
+
+    - actions: ["consume"]
+      effect: EFFECT_ALLOW
+      derivedRoles: ["plan_free"]
+      condition:
+        match:
+          expr: request.resource.attr.current + 1 <= request.principal.attr.free_limit_for[request.resource.attr.kind]
+
+    - actions: ["consume"]
+      effect: EFFECT_DENY
+      roles: ["*"]
