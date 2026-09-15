@@ -1,0 +1,88 @@
+---
+name: quota_test
+description: Quota consumption enforced per plan tier.
+
+principals:
+  free_tenant:
+    id: t-acme
+    roles: ["tenant"]
+    attr:
+      plan: free
+      billing_status: active
+      free_limit_for: { project: 5, seat: 3 }
+      pro_limit_for: { project: 50, seat: 25 }
+
+  pro_tenant:
+    id: t-globex
+    roles: ["tenant"]
+    attr:
+      plan: pro
+      billing_status: active
+      free_limit_for: { project: 5, seat: 3 }
+      pro_limit_for: { project: 50, seat: 25 }
+
+  enterprise_tenant:
+    id: t-massive
+    roles: ["tenant"]
+    attr:
+      plan: enterprise
+      billing_status: active
+
+resources:
+  project_at_cap:
+    kind: quota
+    id: project
+    attr:
+      kind: project
+      current: 5
+
+  project_under_cap:
+    kind: quota
+    id: project
+    attr:
+      kind: project
+      current: 3
+
+  seat_at_pro_cap:
+    kind: quota
+    id: seat
+    attr:
+      kind: seat
+      current: 25
+
+tests:
+  - name: free tenant blocked at project cap
+    input:
+      principals: [free_tenant]
+      resources: [project_at_cap, project_under_cap]
+      actions: [consume]
+    expected:
+      - principal: free_tenant
+        resource: project_at_cap
+        actions: { consume: EFFECT_DENY }
+      - principal: free_tenant
+        resource: project_under_cap
+        actions: { consume: EFFECT_ALLOW }
+
+  - name: pro tenant blocked at seat pro cap
+    input:
+      principals: [pro_tenant]
+      resources: [seat_at_pro_cap]
+      actions: [consume]
+    expected:
+      - principal: pro_tenant
+        resource: seat_at_pro_cap
+        actions: { consume: EFFECT_DENY }
+
+  - name: enterprise tenant never blocked by quota
+    input:
+      principals: [enterprise_tenant]
+      resources: [project_at_cap, seat_at_pro_cap]
+      actions: [consume]
+    expected:
+      - principal: enterprise_tenant
+        resource: project_at_cap
+        actions: { consume: EFFECT_ALLOW }
+      - principal: enterprise_tenant
+        resource: seat_at_pro_cap
+        actions: { consume: EFFECT_ALLOW }
