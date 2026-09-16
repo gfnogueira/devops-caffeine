@@ -1,0 +1,13 @@
+apiVersion: api.cerbos.dev/v1
+principalPolicy:
+  version: default
+  principal: "*"
+  rules:
+    - resource: "*"
+      actions:
+        - name: past_due_lockout
+          action: "*"
+          effect: EFFECT_DENY
+          condition:
+            match:
+              expr: request.principal.attr.billing_status == "past_due"
