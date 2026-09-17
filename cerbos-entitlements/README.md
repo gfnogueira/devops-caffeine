@@ -21,6 +21,7 @@ A billing status of `past_due` overrides every row above to deny.
 
     ./run up
     ./run check probes/free_tries_sso.json
+    ./run matrix
     ./run test
     ./run down
 
@@ -30,3 +31,11 @@ A billing status of `past_due` overrides every row above to deny.
     plans/            resource policies plus derived roles
     plans/verify/     policy tests
     probes/           request payloads used by ./run check
+
+## Notes
+
+Feature and quota rules live in resource policies. The billing lockout is a
+principal policy so it wins over every resource decision when a tenant sits
+in `past_due`. Adding a plan is a new derived role and a new column in the
+feature policy. Adding a quota is a new entry under the `quota` kind and a
+new attribute on the principal for its cap.
