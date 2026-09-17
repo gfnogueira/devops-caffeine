@@ -28,8 +28,17 @@ case "$cmd" in
     docker compose -f deploy/compose.yaml exec -T cerbos \
       cerbos compile /plans --tests /plans
     ;;
+  matrix)
+    for probe in probes/*.json; do
+      name=$(basename "$probe" .json)
+      printf '\n=== %s\n' "$name"
+      curl -sS -X POST "$PDP/api/check/resources" \
+        -H 'content-type: application/json' \
+        -d @"$probe" | jq -c '.results[0].actions'
+    done
+    ;;
   *)
-    echo "usage: ./run {up|down|ping|check <probe>|test}" >&2
+    echo "usage: ./run {up|down|ping|check <probe>|matrix|test}" >&2
     exit 2
     ;;
 esac
