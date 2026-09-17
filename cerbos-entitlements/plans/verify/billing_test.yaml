@@ -1,0 +1,57 @@
+---
+name: billing_test
+description: Past due billing status locks out every action.
+
+principals:
+  enterprise_past_due:
+    id: t-massive
+    roles: ["tenant"]
+    attr:
+      plan: enterprise
+      trial_days_left: 0
+      billing_status: past_due
+
+  enterprise_active:
+    id: t-massive
+    roles: ["tenant"]
+    attr:
+      plan: enterprise
+      trial_days_left: 0
+      billing_status: active
+
+resources:
+  api:
+    kind: feature
+    id: api_access
+    attr:
+      name: api_access
+      min_plan: pro
+      trial_unlocked: false
+
+  project_quota:
+    kind: quota
+    id: project
+    attr:
+      kind: project
+      current: 3
+
+tests:
+  - name: past due tenant blocked everywhere
+    input:
+      principals: [enterprise_past_due]
+      resources: [api]
+      actions: [use]
+    expected:
+      - principal: enterprise_past_due
+        resource: api
+        actions: { use: EFFECT_DENY }
+
+  - name: active enterprise still passes
+    input:
+      principals: [enterprise_active]
+      resources: [api]
+      actions: [use]
+    expected:
+      - principal: enterprise_active
+        resource: api
+        actions: { use: EFFECT_ALLOW }
