@@ -30,15 +30,15 @@ make validate
 - [ ] Confirm events in Falco logs / Sidekick UI
 - [ ] Map one simulation script to the rule it triggers (see `falco-runtime-security/README.md`)
 
-## Phase 2 — bpftrace (planned)
+## Phase 2 — bpftrace
 
-Scripts will land under `examples/`. Target exercises:
+The first script is available under `examples/bpftrace/`. Target exercises:
 
-- List new processes (`execve`) for 30 seconds
+- List new processes (`execve`) for 30 seconds: [execve_audit.bt](../examples/bpftrace/execve_audit.bt)
 - Count syscalls by process name
 - Watch opens under a path prefix
 
-Requires Linux + `bpftrace` on the host used for tracing.
+Requires Linux, `bpftrace`, and tracing privileges on the host used for tracing.
 
 ## Phase 3 — Broader landscape (reading)
 

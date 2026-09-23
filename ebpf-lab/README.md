@@ -29,7 +29,9 @@ ebpf-lab/
 │   ├── 01-fundamentals.md
 │   └── 02-study-roadmap.md
 └── examples/
-    └── README.md
+    ├── README.md
+    └── bpftrace/
+        └── execve_audit.bt
 ```
 
 ## Quick start
@@ -38,7 +40,8 @@ Read in order:
 
 1. [docs/01-fundamentals.md](docs/01-fundamentals.md)
 2. [docs/02-study-roadmap.md](docs/02-study-roadmap.md)
-3. Run [falco-runtime-security](../falco-runtime-security/) if you want eBPF-backed detection without writing BPF yourself
+3. Run [examples/bpftrace/execve_audit.bt](examples/bpftrace/execve_audit.bt) on Linux
+4. Run [falco-runtime-security](../falco-runtime-security/) if you want eBPF-backed detection without writing BPF yourself
 
 ## References
 
