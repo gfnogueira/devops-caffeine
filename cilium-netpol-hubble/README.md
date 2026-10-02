@@ -30,3 +30,10 @@ the change.
     apps/       frontend, backend, intruder namespaces
     netpol/     one policy per rung
     scenes/     short scripts that walk a rung and probe the result
+
+## Reading a Hubble line
+
+A compact flow line shows: timestamp, src identity, dst identity, verdict,
+L4 or L7 detail. Deny lines carry a reason tag like `policy-denied`.
+`scenes/tail-flows.sh backend 50` is the quickest way to pull the last fifty
+for one namespace.
