@@ -37,3 +37,12 @@ A compact flow line shows: timestamp, src identity, dst identity, verdict,
 L4 or L7 detail. Deny lines carry a reason tag like `policy-denied`.
 `scenes/tail-flows.sh backend 50` is the quickest way to pull the last fifty
 for one namespace.
+
+## When something looks wrong
+
+If a GET fails after the L7 policy applies, confirm the request actually
+reached cilium by watching the flows during the probe. A dropped connection
+with no flow entry usually means the pod labels do not match the policy
+`endpointSelector`. Double check with `scenes/cilium-status.sh` and verify
+the endpoint carries the expected identity labels before touching the
+policy YAML.
