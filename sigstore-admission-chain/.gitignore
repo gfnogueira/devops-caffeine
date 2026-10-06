@@ -1,0 +1,5 @@
+*.log
+cosign.key
+cosign.pub
+*.sbom.json
+.kubeconfig
