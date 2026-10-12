@@ -1,0 +1,50 @@
+[tools]
+kind = "0.24.0"
+kubectl = "1.31.0"
+helm = "3.16.1"
+cosign = "2.4.1"
+trivy = "0.56.1"
+
+[env]
+REGISTRY = "registry.local:5000"
+IMAGE_TAG = "0.1.0"
+
+[tasks.up]
+description = "Create kind cluster and local registry"
+run = [
+  "cluster/registry.sh",
+  "kind create cluster --config cluster/kind.yaml",
+  "cluster/policy-controller.sh",
+]
+
+[tasks.down]
+description = "Tear kind and registry down"
+run = "cluster/teardown.sh"
+
+[tasks.build]
+description = "Build the sample images"
+run = "scripts/01-build.sh"
+
+[tasks.sign]
+description = "Sign the pushed images with Cosign"
+run = "scripts/02-sign.sh"
+
+[tasks.verify]
+description = "Verify the signatures with Cosign"
+run = "scripts/03-verify.sh"
+
+[tasks.attest]
+description = "Attach a Trivy SBOM attestation"
+run = "scripts/04-attest-sbom.sh"
+
+[tasks.warn]
+description = "Apply the ClusterImagePolicy in warn mode"
+run = "scripts/05-apply-warn.sh"
+
+[tasks.enforce]
+description = "Flip the ClusterImagePolicy to enforce"
+run = "scripts/06-apply-enforce.sh"
+
+[tasks.logs]
+description = "Tail the policy-controller webhook logs"
+run = "scripts/logs-admission.sh"
