@@ -1,0 +1,18 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: registry-signed-warn
+spec:
+  mode: warn
+  images:
+    - glob: "registry.local:5000/**"
+  authorities:
+    - name: local-key
+      key:
+        data: |
+          -----BEGIN PUBLIC KEY-----
+          REPLACE_ME_WITH_cosign.pub
+          -----END PUBLIC KEY-----
+      ctlog:
+        url: https://rekor.sigstore.dev
+        trustRootRef: public-good
