@@ -1,0 +1,18 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: registry-sbom-attest
+spec:
+  mode: enforce
+  images:
+    - glob: "registry.local:5000/**"
+  authorities:
+    - name: local-key-attest
+      key:
+        data: |
+          -----BEGIN PUBLIC KEY-----
+          REPLACE_ME_WITH_cosign.pub
+          -----END PUBLIC KEY-----
+      attestations:
+        - name: must-have-cyclonedx
+          predicateType: cyclonedx
