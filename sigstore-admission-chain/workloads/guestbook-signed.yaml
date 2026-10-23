@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: guestbook-ui
+  namespace: default
+  labels:
+    app: guestbook-ui
+spec:
+  containers:
+    - name: web
+      image: registry.local:5000/guestbook-ui:0.1.0
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 80
