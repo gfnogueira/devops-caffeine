@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  up:
+    desc: Start the collector
+    cmds:
+      - docker compose up -d
+
+  down:
+    desc: Stop the stack and drop volumes
+    cmds:
+      - docker compose down -v
