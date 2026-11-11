@@ -17,6 +17,10 @@ exporters:
     endpoint: http://tempo:4318
     tls:
       insecure: true
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    namespace: otel
+    send_timestamps: true
 
 extensions:
   health_check:
@@ -32,7 +36,7 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [prometheus]
     logs:
       receivers: [otlp]
       processors: [batch]

@@ -10,9 +10,11 @@ services:
     ports:
       - "4317:4317"
       - "4318:4318"
+      - "8889:8889"
       - "13133:13133"
     depends_on:
       - tempo
+      - prometheus
 
   tempo:
     image: grafana/tempo:2.6.1
@@ -24,5 +26,18 @@ services:
     ports:
       - "3200:3200"
 
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.path=/prometheus
+    volumes:
+      - ./backends/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+
 volumes:
   tempo-data:
+  prometheus-data:
