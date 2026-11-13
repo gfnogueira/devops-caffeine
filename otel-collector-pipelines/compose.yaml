@@ -55,6 +55,18 @@ services:
       - tempo
       - prometheus
 
+  demo:
+    build: ./demo
+    container_name: demo
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otelcol:4317
+      OTEL_SERVICE_NAME: payments
+      OTEL_RESOURCE_ATTRIBUTES: service.version=0.3.1,deployment.environment=lab
+    ports:
+      - "8080:8080"
+    depends_on:
+      - otelcol
+
 volumes:
   tempo-data:
   prometheus-data:
