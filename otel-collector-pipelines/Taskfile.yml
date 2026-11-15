@@ -2,11 +2,31 @@ version: '3'
 
 tasks:
   up:
-    desc: Start the collector
+    desc: Start the stack
     cmds:
-      - docker compose up -d
+      - docker compose up -d --build
 
   down:
     desc: Stop the stack and drop volumes
     cmds:
       - docker compose down -v
+
+  baseline:
+    desc: Swap the collector back to the baseline config
+    cmds:
+      - bash recipes/swap-config.sh baseline
+
+  processors:
+    desc: Swap the collector onto the with-processors config
+    cmds:
+      - bash recipes/swap-config.sh with-processors
+
+  fire:
+    desc: Fire sample traffic at the demo app
+    cmds:
+      - bash recipes/fire-traffic.sh {{.CLI_ARGS}}
+
+  logs:
+    desc: Tail the collector logs
+    cmds:
+      - docker compose logs -f otelcol
