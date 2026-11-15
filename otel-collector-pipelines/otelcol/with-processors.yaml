@@ -24,6 +24,12 @@ processors:
         action: delete
       - key: user.email
         action: delete
+  filter/healthz:
+    error_mode: ignore
+    traces:
+      span:
+        - attributes["http.target"] == "/healthz"
+        - attributes["url.path"] == "/healthz"
 
 exporters:
   otlphttp/tempo:
@@ -44,7 +50,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [batch, resource, attributes/scrub]
+      processors: [filter/healthz, resource, attributes/scrub, batch]
       exporters: [otlphttp/tempo]
     metrics:
       receivers: [otlp]
