@@ -21,6 +21,11 @@ tasks:
     cmds:
       - bash recipes/swap-config.sh with-processors
 
+  sampling:
+    desc: Swap the collector onto the tail-sampling config
+    cmds:
+      - bash recipes/swap-config.sh tail-sampling
+
   fire:
     desc: Fire sample traffic at the demo app
     cmds:
